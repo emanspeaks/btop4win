@@ -195,7 +195,7 @@ namespace Menu {
 				"Enables monitoring of CPU temps, CPU clock",
 				"and GPU.",
 				"Needs custom made DLL's from:",
-				"https://github.com/aristocratos/LHM-CppExport",
+				"https://github.com/emanspeaks/LHM-CppExport",
 				"installed in same folder as btop4win.exe.",
 				"",
 				"A restart is needed for this option to",

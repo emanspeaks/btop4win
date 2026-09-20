@@ -1,3 +1,7 @@
+## v1.0.6
+* Updated: LibreHardwareMonitor to 0.9.6, which no longer includes the WinRing0 driver (Windows Defender false positive)
+* Note: some CPU sensors may require the PawnIO driver (https://pawnio.eu)
+
 ## v1.0.5
 * Updated: LibreHardwareMonitor to latest version (0.9.4)
 * Added: Better detection of GPU total memory

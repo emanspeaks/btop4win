@@ -28,6 +28,13 @@
 
 ## News
 
+##### 20 September 2026
+
+Release v1.0.6
+
+Updated LibreHardwareMonitor to 0.9.6 (via the updated [LHM-CppExport](https://github.com/emanspeaks/LHM-CppExport) wrapper). This LHM version no longer bundles the WinRing0 driver that Windows Defender flags.
+Some CPU sensors (temperatures/voltages on certain chips) now rely on the separate [PawnIO](https://pawnio.eu) driver being installed.
+
 ##### 12 October 2025
 
 Release v1.0.5
@@ -52,7 +59,7 @@ The 2 available packages are now:
 
 * btop4win-LHM
 
-    Has full GPU monitoring, etc. using Libre Hardware Monitor, DLL's included in the package, ([source](https://github.com/aristocratos/LHM-CppExport)).
+    Has full GPU monitoring, etc. using Libre Hardware Monitor, DLL's included in the package, ([source](https://github.com/emanspeaks/LHM-CppExport)).
 
     Requires admin rights to run.
 
@@ -221,9 +228,9 @@ Also needs a UTF8 locale and a font that covers:
 
 1. (Optional) For compiling with LibreHardwareMonitor support:
 
-    * Either download latest release from https://github.com/aristocratos/LHM-CppExport and place the "external" folder in btop4win top folder, or:
+    * Either download the latest release (0.9.6 or newer, to avoid the WinRing0 driver) from https://github.com/emanspeaks/LHM-CppExport and place the "external" folder in btop4win top folder, or:
 
-    * 1. Clone https://github.com/aristocratos/LHM-CppExport and open the solution
+    * 1. Clone https://github.com/emanspeaks/LHM-CppExport and open the solution
 
     * 2. Build Release x64 configuration for CPPdll
 

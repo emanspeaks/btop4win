@@ -53,14 +53,14 @@ namespace Config {
 
 		{"presets",				"#* Define presets for the layout of the boxes. Preset 0 is always all boxes shown with default settings. Max 9 presets.\n"
 								"#* Format: \"box_name:P:G,box_name:P:G\" P=(0 or 1) for alternate positions, G=graph symbol to use for box.\n"
-								"#* Use withespace \" \" as separator between different presets.\n"
+								"#* Use whitespace \" \" as separator between different presets.\n"
 								"#* Example: \"cpu:0:default,mem:0:tty,proc:1:default cpu:0:braille,proc:0:tty\""},
 
 		{"vim_keys",			"#* Set to True to enable \"h,j,k,l,g,G\" keys for directional control in lists.\n"
 								"#* Conflicting keys for h:\"help\" and k:\"kill\" is accessible while holding shift."},
 
 		{"enable_ohmr",			"#* Enables monitoring of CPU temps, accurate CPU clock and GPU via Libre Hardware Monitor.\n"
-								"#* Needs the my DLL's from (https://github.com/aristocratos/LHM-CppExport) installed in same folder as btop4win.exe."},
+								"#* Needs the DLL's from (https://github.com/emanspeaks/LHM-CppExport) installed in same folder as btop4win.exe."},
 
 		{"show_gpu",			"#* Also show gpu stats in cpu and mem box. Needs Libre Hardware Monitor Report enabled."},
 
@@ -90,7 +90,7 @@ namespace Config {
 
 		{"proc_sorting",		"#* Processes sorting, \"pid\" \"program\" \"arguments\" \"threads\" \"user\" \"memory\" \"cpu lazy\" \"cpu direct\",\n"
 								"#* \"cpu lazy\" sorts top process over time (easier to follow), \"cpu direct\" updates top process directly."},
-		
+
 		{"proc_services",		"#* Show services in the process box instead of processes."},
 
 		{"services_sorting",	"#* Services sorting, \"service\" \"caption\" \"status\" \"memory\" \"cpu lazy\" \"cpu direct\",\n"

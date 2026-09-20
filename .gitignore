@@ -48,3 +48,5 @@ Win32
 
 packages
 external
+#local portable release staging
+portable
