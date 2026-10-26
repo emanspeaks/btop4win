@@ -3,7 +3,7 @@
 ![Windows](https://img.shields.io/badge/-Windows-red?logo=windows)
 ![Usage](https://img.shields.io/badge/Usage-System%20resource%20monitor-yellow)
 ![c++20](https://img.shields.io/badge/cpp-c%2B%2B20-green)
-![latest_release](https://img.shields.io/github/v/tag/aristocratos/btop4win?label=release)
+![latest_release](https://img.shields.io/github/v/tag/emanspeaks/btop4win?label=release)
 [![Donate](https://img.shields.io/badge/-Donate-yellow?logo=paypal)](https://paypal.me/aristocratos)
 [![Sponsor](https://img.shields.io/badge/-Sponsor-red?logo=github)](https://github.com/sponsors/aristocratos)
 [![Coffee](https://img.shields.io/badge/-Buy%20me%20a%20Coffee-grey?logo=Ko-fi)](https://ko-fi.com/aristocratos)
@@ -207,7 +207,7 @@ Also needs a UTF8 locale and a font that covers:
 
 1. Make sure you have the latest MSVC Runtime Libraries installed: https://aka.ms/vs/17/release/vc_redist.x64.exe
 
-2. Download package of choice from latest [release](https://github.com/aristocratos/btop4win/releases/latest)
+2. Download package of choice from latest [release](https://github.com/emanspeaks/btop4win/releases/latest)
 
 3. Extract the btop4win folder anywhere and run btop4win.exe.
 

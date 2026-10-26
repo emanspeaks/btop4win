@@ -1,0 +1,124 @@
+name: Build and release
+
+# Builds the btop4win and btop4win-LHM packages. The LHM build uses the "external" folder
+# from an LHM-CppExport release on this fork's owner account. Pushing a v* tag publishes a
+# release on the repository the workflow runs in (this fork), never upstream.
+
+on:
+  push:
+    branches: [master]
+    tags: ['v*']
+  workflow_dispatch:
+    inputs:
+      lhm_tag:
+        description: LHM-CppExport release tag to build against (blank = latest)
+        required: false
+
+permissions:
+  contents: write
+
+env:
+  LHM_REPO: ${{ github.repository_owner }}/LHM-CppExport
+  # Optional pin via the LHM_TAG repository variable; falls back to the latest release
+  LHM_TAG: ${{ inputs.lhm_tag || vars.LHM_TAG }}
+
+jobs:
+  build:
+    # windows-2022 ships Visual Studio 2022, which provides the v143 toolset the project targets
+    runs-on: windows-2022
+    defaults:
+      run:
+        shell: pwsh
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: microsoft/setup-msbuild@v2
+
+      - name: Fetch LHM-CppExport external folder
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $tag = @()
+          if ($env:LHM_TAG) { $tag = @($env:LHM_TAG) }
+          gh release download @tag --repo $env:LHM_REPO --pattern LHM-CPPdll-x64.zip --dir lhm
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          Expand-Archive lhm/LHM-CPPdll-x64.zip -DestinationPath . -Force
+          Get-ChildItem external | Select-Object -ExpandProperty Name
+
+      - name: Build btop4win
+        run: msbuild btop4win.sln -m -p:Configuration=Release -p:Platform=x64
+
+      - name: Build btop4win-LHM
+        run: msbuild btop4win.sln -m -p:Configuration=Release-LHM -p:Platform=x64
+
+      - name: Package
+        run: |
+          function New-Package([string]$Name, [string]$Bin, [switch]$Lhm) {
+            $stage = "dist/$Name/btop4win"
+            New-Item -ItemType Directory -Force $stage | Out-Null
+            Copy-Item "$Bin/btop4win.exe", README.md, CHANGELOG.md, LICENSE $stage
+            Copy-Item themes $stage -Recurse
+            if ($Lhm) {
+              Copy-Item "$Bin/*.dll" $stage
+              Copy-Item external/LICENSE-LibreHardwareMonitor.txt "$stage/LICENSE-LibreHardwareMonitor"
+            }
+            Compress-Archive -Path $stage -DestinationPath "$Name.zip"
+          }
+          New-Package btop4win-x64 x64/Release
+          New-Package btop4win-LHM-x64 x64/Release-LHM -Lhm
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: btop4win-packages
+          path: '*.zip'
+
+      - name: Publish release
+        if: startsWith(github.ref, 'refs/tags/')
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $tag = $env:GITHUB_REF_NAME
+          # Fork tags carry a suffix (v1.0.6-emanspeaks); CHANGELOG.md sections use the bare version
+          $version = $tag -replace '-.*$', ''
+          $lines = @(Get-Content CHANGELOG.md)
+          $start = [array]::IndexOf($lines, "## $version")
+          if ($start -lt 0) {
+            Write-Warning "No '## $version' section in CHANGELOG.md"
+            $changes = ''
+          } else {
+            $end = $start + 1
+            while ($end -lt $lines.Count -and -not $lines[$end].StartsWith('## ')) { $end++ }
+            $body = $lines | Select-Object -Skip ($start + 1) -First ($end - $start - 1)
+            $changes = (@("## Changelog $version") + $body) -join "`n"
+          }
+          $lhmSource = "$env:GITHUB_SERVER_URL/$env:LHM_REPO"
+          @"
+          $changes
+
+          **Make sure you have the latest MSVC Runtime Libraries installed: https://aka.ms/vs/17/release/vc_redist.x64.exe**
+
+          The 2 available packages are:
+
+          * btop4win:
+
+              Has no support for GPU monitoring, CPU temperature monitoring and does not have accurate CPU clock monitoring.
+
+              Does not require admin rights to run. (But it's still highly recommended to run as admin, otherwise some process information will be missing.)
+
+          * btop4win-LHM
+
+              Has full GPU monitoring, etc. using Libre Hardware Monitor, DLL's included in the package, ([LHM-CPPdll source]($lhmSource)).
+
+              Requires admin rights to run. Some CPU sensors may require the PawnIO driver (https://pawnio.eu).
+          "@ | Set-Content -Encoding utf8 notes.md
+
+          # --repo is explicit so gh never resolves to the upstream parent of this fork
+          $PSNativeCommandUseErrorActionPreference = $false
+          gh release view $tag --repo $env:GITHUB_REPOSITORY *> $null
+          if ($LASTEXITCODE -eq 0) {
+            gh release upload $tag btop4win-x64.zip btop4win-LHM-x64.zip --repo $env:GITHUB_REPOSITORY --clobber
+          } else {
+            gh release create $tag btop4win-x64.zip btop4win-LHM-x64.zip --repo $env:GITHUB_REPOSITORY --verify-tag `
+              --title $tag --notes-file notes.md
+          }
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
